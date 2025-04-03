@@ -9,7 +9,13 @@ def ucitaj_podatke() -> dict:
     Returns:
         dict: Podaci o kontaktima iz JSON datoteke ili prazan adresar.
     """
-    pass
+
+    try:
+        with open(DATOTEKA_ADRESARA, 'r', encoding='utf-8') as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {"Kontakti": {}}
+
 
 def spremi_podatke(podaci: dict) -> None:
     """
@@ -18,7 +24,12 @@ def spremi_podatke(podaci: dict) -> None:
     Args:
         podaci (dict): Podaci koji će biti pohranjeni u datoteku.
     """
-    pass
+
+
+    with open(DATOTEKA_ADRESARA, 'w', encoding='utf-8') as file:
+        json.dump(podaci, file, indent=4)
+        
+
 
 def provjeri_telefon(telefon: str) -> bool:
     """
@@ -30,7 +41,7 @@ def provjeri_telefon(telefon: str) -> bool:
     Returns:
         bool: True ako telefon sadrži samo brojke, inače False.
     """
-    pass
+    return telefon.isdigit()
 
 def provjeri_email(email: str) -> bool:
     """
@@ -42,7 +53,7 @@ def provjeri_email(email: str) -> bool:
     Returns:
         bool: True ako email sadrži '@', inače False.
     """
-    pass
+    return '@' in email
 
 def dodaj_kontakt(ime: str, telefon: str, email: str, adresa: str) -> None:
     """
@@ -54,13 +65,49 @@ def dodaj_kontakt(ime: str, telefon: str, email: str, adresa: str) -> None:
         email (str): Email kontakta.
         adresa (str): Adresa kontakta.
     """
-    pass
+
+    if not ime.strip():
+        print("Ime ne smije biti prazno!")
+        return
+    
+    if not provjeri_telefon(telefon):
+        print("Telefon mora imati samo brojke!")
+        return
+    if not provjeri_email(email):
+        print("Email adresa mora imati znak @, upišite ispravnu adresu")
+        return
+    
+    podaci = ucitaj_podatke()
+
+    podaci["Kontakti"][ime] = {
+        "Telefon": telefon,
+        "Email": email,
+        "Adresa": adresa
+    }
+
+    spremi_podatke(podaci)
+    print(f"Kontakt {ime} je uspješno dodan")
+
+
+
 
 def prikazi_kontakte() -> None:
     """
     Prikazuje sve kontakte u adresaru.
     """
-    pass
+    podaci = ucitaj_podatke()
+    kontakti = podaci["Kontakti"]
+
+    if not kontakti:
+        print("Adresar je prazan")
+        return
+    print("\nSvi kontakti:")
+    for ime, info in kontakti.items():
+        print(f"\nIme: {ime}")
+        print(f"\nTelefon: {info['Telefon']}")
+        print(f"\nEmail: {info['Email']}")
+        print(f"\nAdresa: {info['Adresa']}")
+        print("-" * 30)
 
 def pretrazi_kontakt(ime: str) -> None:
     """
@@ -69,7 +116,21 @@ def pretrazi_kontakt(ime: str) -> None:
     Args:
         ime (str): Ime kontakta za pretragu.
     """
-    pass
+    podaci = ucitaj_podatke()
+    kontakti = podaci["Kontakti"]
+
+    if ime in kontakti:
+        info = kontakti[ime]
+        print(f"\nKontakt pronađen:")
+        print(f"Ime: {ime}")
+        print(f"\nTelefon: {info['Telefon']}")
+        print(f"\nEmail: {info['Email']}")
+        print(f"\nAdresa: {info['Adresa']}")
+    else:
+        print(f"Kontakt s imenom {ime} nije pronađen")
+
+
+
 
 def obrisi_kontakt(ime: str) -> None:
     """
@@ -78,7 +139,15 @@ def obrisi_kontakt(ime: str) -> None:
     Args:
         ime (str): Ime kontakta koji će biti obrisan.
     """
-    pass
+    podaci = ucitaj_podatke()
+    kontakti = podaci["Kontakti"]
+
+    if ime in kontakti:
+        del kontakti [ime]
+        spremi_podatke(podaci)
+        print(f"Kontakt {ime} je obrisan")
+    else:
+        print(f"Kontakt {ime} nije pronađen")
 
 def main() -> None:
     """
