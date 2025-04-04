@@ -31,6 +31,7 @@ def spremi_podatke(podaci: dict) -> None:
         
 
 
+
 def provjeri_telefon(telefon: str) -> bool:
     """
     Provjerava je li telefon sastavljen samo od brojki.
@@ -183,4 +184,4 @@ def main() -> None:
             print("Pogrešan unos, pokušajte ponovo.")
 
 if __name__ == "__main__":
-    main()
+    main() 
